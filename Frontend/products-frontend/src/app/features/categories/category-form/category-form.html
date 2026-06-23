@@ -1,0 +1,43 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="category-form">
+  <h3>{{ isEditMode() ? 'Editar categoría' : 'Nueva categoría' }}</h3>
+
+  @if (serverError()) {
+    <div class="server-error-banner">
+      {{ serverError()!.message }}
+    </div>
+  }
+
+  <div class="field">
+    <label for="name">Nombre</label>
+    <input id="name" type="text" formControlName="name" />
+    @if (hasError('name', 'required')) {
+      <span class="field-error">El nombre es requerido.</span>
+    }
+    @if (hasError('name', 'maxlength')) {
+      <span class="field-error">El nombre no puede superar 100 caracteres.</span>
+    }
+  </div>
+
+  <div class="field">
+    <label for="description">Descripción</label>
+    <textarea id="description" formControlName="description"></textarea>
+    @if (hasError('description', 'maxlength')) {
+      <span class="field-error">La descripción no puede superar 500 caracteres.</span>
+    }
+  </div>
+
+  @if (serverError()?.errors) {
+    <ul class="server-error-list">
+      @for (e of serverError()!.errors!; track e) {
+        <li>{{ e }}</li>
+      }
+    </ul>
+  }
+
+  <div class="form-actions">
+    <button type="button" (click)="onCancel()" [disabled]="isSaving()">Cancelar</button>
+    <button type="submit" [disabled]="isSaving()">
+      {{ isSaving() ? 'Guardando...' : 'Guardar' }}
+    </button>
+  </div>
+</form>

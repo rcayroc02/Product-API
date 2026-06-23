@@ -1,0 +1,80 @@
+<div class="category-list-page">
+
+  @if (viewMode() === 'list') {
+
+    <div class="toolbar">
+      <h2>Categorías</h2>
+      <button (click)="openCreateForm()">+ Nueva categoría</button>
+    </div>
+
+    @if (isLoading()) {
+      <p>Cargando categorías...</p>
+    }
+
+    @if (loadError()) {
+      <div class="error-banner">{{ loadError()!.message }}</div>
+    }
+
+    @if (!isLoading() && !loadError()) {
+
+      @if (categories().length === 0) {
+        <p>No hay categorías para mostrar.</p>
+      } @else {
+        <table class="category-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Productos asociados</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cat of categories(); track cat.id) {
+              <tr>
+                <td>{{ cat.name }}</td>
+                <td>{{ cat.description || '—' }}</td>
+                <td>{{ cat.productCount }}</td>
+                <td class="actions-cell">
+                  <button (click)="openEditForm(cat)">Editar</button>
+                  <button class="btn-danger" (click)="askDeleteConfirmation(cat)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    }
+
+    @if (categoryPendingDelete()) {
+      <div class="modal-overlay">
+        <div class="modal-box">
+          <p>¿Seguro que quieres eliminar <strong>{{ categoryPendingDelete()!.name }}</strong>?</p>
+
+          @if (categoryPendingDelete()!.productCount > 0) {
+            <p class="warning-text">
+              ⚠ Esta categoría tiene {{ categoryPendingDelete()!.productCount }} producto(s) asociado(s).
+            </p>
+          }
+
+          @if (deleteError()) {
+            <div class="error-banner">{{ deleteError()!.message }}</div>
+          }
+
+          <div class="modal-actions">
+            <button (click)="cancelDelete()">Cancelar</button>
+            <button class="btn-danger" (click)="confirmDelete()">Sí, eliminar</button>
+          </div>
+        </div>
+      </div>
+    }
+
+  } @else {
+    <app-category-form
+      [categoryToEdit]="categoryBeingEdited()"
+      (saved)="onFormSaved()"
+      (cancelled)="onFormCancelled()">
+    </app-category-form>
+  }
+
+</div>

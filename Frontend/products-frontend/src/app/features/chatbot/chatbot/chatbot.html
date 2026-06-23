@@ -1,0 +1,70 @@
+<div class="chat-widget">
+
+  <div class="chat-header">
+    <span class="bot-icon">🤖</span>
+    <span>Asistente de productos</span>
+  </div>
+
+  <div class="chat-messages">
+    @for (msg of messages(); track msg.id) {
+      <div class="message-row" [class.message-row--user]="msg.sender === 'user'">
+        <div
+          class="message-bubble"
+          [class.message-bubble--user]="msg.sender === 'user'"
+          [class.message-bubble--bot]="msg.sender === 'bot'"
+          [class.message-bubble--error]="msg.isError">
+
+          @if (msg.text) {
+            <p>{{ msg.text }}</p>
+          }
+
+          @if (msg.products && msg.products.length > 0) {
+            <div class="product-mini-list">
+              @for (product of msg.products; track product.id) {
+                <div class="product-mini-card">
+                  <div class="product-mini-name">{{ product.name }}</div>
+                  <div class="product-mini-details">
+                    <span>S/ {{ product.price.toFixed(2) }}</span>
+                    <span class="dot">·</span>
+                    <span>{{ product.categoryName }}</span>
+                    <span class="dot">·</span>
+                    <span>Stock: {{ product.stock }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (isWaitingResponse()) {
+      <div class="message-row">
+        <div class="message-bubble message-bubble--bot message-bubble--typing">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
+      </div>
+    }
+
+    <div #scrollAnchor></div>
+  </div>
+
+  <div class="chat-input-bar">
+    <textarea
+        placeholder="Escribe tu consulta..."
+        [value]="currentQuery()"
+        (input)="currentQuery.set($any($event.target).value)"
+        (keydown.enter)="onEnterKey($event)"
+        [disabled]="isWaitingResponse()"
+        rows="1">
+        </textarea>
+    <button
+      (click)="sendMessage()"
+      [disabled]="isWaitingResponse() || !currentQuery().trim()">
+      Enviar
+    </button>
+  </div>
+
+</div>

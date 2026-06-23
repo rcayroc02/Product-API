@@ -377,3 +377,4 @@ C:\Users\ROG\Desktop\DOTNET\Backend\obj\Debug\net10.0\refint\DOTNET.dll
 C:\Users\ROG\Desktop\DOTNET\Backend\obj\Debug\net10.0\DOTNET.pdb
 C:\Users\ROG\Desktop\DOTNET\Backend\obj\Debug\net10.0\DOTNET.genruntimeconfig.cache
 C:\Users\ROG\Desktop\DOTNET\Backend\obj\Debug\net10.0\ref\DOTNET.dll
+C:\Users\ROG\Desktop\DOTNET\Backend\obj\Debug\net10.0\DOTNET.sourcelink.json

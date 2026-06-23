@@ -1,0 +1,102 @@
+<div class="product-list-page">
+
+  @if (viewMode() === 'list') {
+
+    <div class="toolbar">
+      <h2>Productos</h2>
+      <button (click)="openCreateForm()">+ Nuevo producto</button>
+    </div>
+
+    <div class="filters">
+      <label for="categoryFilter">Filtrar por categoría:</label>
+      <select id="categoryFilter" (change)="onCategoryFilterChange($any($event.target).value)">
+        <option value="">Todas</option>
+        @for (cat of categories(); track cat.id) {
+          <option [value]="cat.id">{{ cat.name }}</option>
+        }
+      </select>
+    </div>
+
+    @if (isLoading()) {
+      <p>Cargando productos...</p>
+    }
+
+    @if (loadError()) {
+      <div class="error-banner">
+        {{ loadError()!.message }}
+      </div>
+    }
+
+    @if (!isLoading() && !loadError()) {
+
+      @if (products().length === 0) {
+        <p>No hay productos para mostrar.</p>
+      } @else {
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of products(); track product.id) {
+              <tr [class.inactive-row]="!product.isActive">
+                <td>{{ product.name }}</td>
+                <td>{{ product.categoryName }}</td>
+                <td>S/ {{ product.price.toFixed(2) }}</td>
+                <td>{{ product.stock }}</td>
+                <td>
+                  <span class="badge" [class.badge-active]="product.isActive" [class.badge-inactive]="!product.isActive">
+                    {{ product.isActive ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+                <td class="actions-cell">
+                  <button (click)="openEditForm(product)">Editar</button>
+                  <button class="btn-danger" (click)="askDeleteConfirmation(product)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <div class="pagination">
+          <button (click)="goToPage(page() - 1)" [disabled]="page() === 1">Anterior</button>
+          <span>Página {{ page() }} de {{ totalPages() }} ({{ totalItems() }} productos)</span>
+          <button (click)="goToPage(page() + 1)" [disabled]="page() === totalPages()">Siguiente</button>
+        </div>
+      }
+    }
+
+    <!-- Modal de confirmación de borrado -->
+    @if (productPendingDelete()) {
+      <div class="modal-overlay">
+        <div class="modal-box">
+          <p>¿Seguro que quieres eliminar <strong>{{ productPendingDelete()!.name }}</strong>?</p>
+
+          @if (deleteError()) {
+            <div class="error-banner">{{ deleteError()!.message }}</div>
+          }
+
+          <div class="modal-actions">
+            <button (click)="cancelDelete()">Cancelar</button>
+            <button class="btn-danger" (click)="confirmDelete()">Sí, eliminar</button>
+          </div>
+        </div>
+      </div>
+    }
+
+  } @else {
+    <!-- Formulario embebido (crear o editar) -->
+    <app-product-form
+      [productToEdit]="productBeingEdited()"
+      (saved)="onFormSaved()"
+      (cancelled)="onFormCancelled()">
+    </app-product-form>
+  }
+
+</div>
